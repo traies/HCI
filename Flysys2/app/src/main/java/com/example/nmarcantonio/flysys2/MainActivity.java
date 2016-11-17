@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -44,25 +46,19 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         context = this;
       //  resultTextView = (TextView) findViewById(R.id.result);
-        new HttpGetTask().execute();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.content_frame,new FlightsFragment()).commit();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -77,6 +73,7 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -105,18 +102,19 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+        android.app.FragmentManager fragmentManager = getFragmentManager();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_flights) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame,new FlightsFragment()).commit();
+        } else if (id == R.id.nav_offers) {
+            fragmentManager.beginTransaction().replace(R.id.content_frame,new OffersFragment()).commit();
+        } else if (id == R.id.nav_airports) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_conversor) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_bin) {
 
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_configuration) {
 
         }
 
@@ -126,79 +124,5 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    private class HttpGetTask extends AsyncTask<Void, Void, String> {
-        @Override
-        protected String doInBackground(Void... params) {
 
-            HttpURLConnection urlConnection = null;
-
-            try {
-                URL url = new URL("http://hci.it.itba.edu.ar/v1/api/booking.groovy?method=getflightdeals&from=BUE");
-                urlConnection = (HttpURLConnection) url.openConnection();
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                return readStream(in);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                return "Unexpected Error";
-            } finally {
-                if (urlConnection != null)
-                    urlConnection.disconnect();
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-
-            try {
-                JSONObject obj = new JSONObject(result);
-                if (!obj.has(MainActivity.DEALS_NAME))
-                    return ;
-                Gson gson = new Gson();
-                Type listType = new TypeToken<ArrayList<Deal>>() {
-                }.getType();
-
-                String jsonFragment = obj.getString(MainActivity.DEALS_NAME);
-
-
-                ArrayList<Deal> dealList = gson.fromJson(jsonFragment, listType);
-                final ListView listView = (ListView) findViewById(R.id.list_view);
-                if (listView != null) {
-                    final Product[] values = new Product[dealList.size()];
-
-                    for (int j = 0; j <dealList.size(); j++) {
-                        values[j] = new Product(j, dealList.get(j).getName(), new Double(dealList.get(j).getPrice() ) );
-                    }
-
-                    ;
-
-                    ProductArrayAdapter adapter = new ProductArrayAdapter(context  , values);
-                    listView.setAdapter(adapter);
-
-
-
-                }
-                ;
-
-
-            } catch (Exception exception) {
-              //  resultTextView.append(new Integer("10").toString());
-            }
-            ;
-        }
-
-        private String readStream(InputStream inputStream) {
-            try {
-                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                int i = inputStream.read();
-                while (i != -1) {
-                    outputStream.write(i);
-                    i = inputStream.read();
-                }
-                return outputStream.toString();
-
-            } catch (IOException e) {
-                return "";
-            }
-        }
-    }
 }

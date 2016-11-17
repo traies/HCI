@@ -23,32 +23,8 @@
 
     <include layout="@layout/content_main" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#EFEBE9"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context="com.example.nmarcantonio.flysys.MainActivity"
-        android:layout_alignEnd="@+id/nav_view">
 
 
 
-        <ListView
-            android:id="@+id/list_view"
-            android:background="#263238"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="50dp"
-            />
-    </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
